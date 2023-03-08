@@ -8,6 +8,6 @@
 
 void sendpkt(int from, int to, int costs[4][4]);
 bool updateCosts(int (*costs)[4][4], const int col_update);
-bool update_all(struct rtpkt *pkt, int (*costs)[4][4], const int node_id);
+bool update_allrt(struct rtpkt *pkt, int (*costs)[4][4], const int node_id);
 
 #endif

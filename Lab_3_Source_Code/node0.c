@@ -1,3 +1,5 @@
+//LABB GENOMFÖRD AV KENAN SAHINOVIC OCH OLIVER RANER
+
 #include <stdio.h>
 
 #include "sim_engine.h"
@@ -31,7 +33,6 @@ void printdt0(struct distance_table *dtptr)
 
 void rtinit0()
 {
-  /* TODO */
 
   for (int i = 0; i < 4; i++)
   {
@@ -42,9 +43,9 @@ void rtinit0()
   }
 
   dt0.costs[0][0] = 0;
-  dt0.costs[1][0] = 1; // cost till nod 1
-  dt0.costs[2][0] = 3; // cost till nod 2
-  dt0.costs[3][0] = 7; // cost till nod 3
+  dt0.costs[1][0] = 1; // cost till nod 1 från 0
+  dt0.costs[2][0] = 3; // cost till nod 2 från 0
+  dt0.costs[3][0] = 7; // cost till nod 3 från 0
   printdt0(&dt0);
 
   sendpkt(0, 1, dt0.costs);
@@ -54,11 +55,11 @@ void rtinit0()
 
 void rtupdate0(struct rtpkt *rcvdpkt)
 {
-  /* TODO */
+  
   printf("  \t\033[0;32mRTUPDATE0\n\n");
   printdt0(&dt0);
 
-  if (update_all(rcvdpkt, &dt0.costs, 0))
+  if (update_allrt(rcvdpkt, &dt0.costs, 0))
   {
     sendpkt(0, 1, dt0.costs);
     sendpkt(0, 2, dt0.costs);

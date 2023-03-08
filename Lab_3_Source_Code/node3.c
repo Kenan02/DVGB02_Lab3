@@ -1,3 +1,4 @@
+//LABB GENOMFÖRD AV KENAN SAHINOVIC OCH OLIVER RANER
 #include <stdio.h>
 
 #include "sim_engine.h"
@@ -36,10 +37,10 @@ void rtinit3()
     }
   }
 
-  dt3.costs[0][3] = 7;
-  dt3.costs[1][3] = INF;
-  dt3.costs[2][3] = 2;
-  dt3.costs[3][3] = 0;
+  dt3.costs[0][3] = 7; //cost mellan nod 3 och 0
+  dt3.costs[1][3] = INF; //nod 1 och 3 har ingen koppling så vi sätter inf
+  dt3.costs[2][3] = 2; //cost mellan nod 3 och 2
+  dt3.costs[3][3] = 0; //cost mellan själva noden 3
   // printdt3(&dt3);
 
   sendpkt(3, 0, dt3.costs);
@@ -53,7 +54,7 @@ void rtupdate3(struct rtpkt *rcvdpkt)
   printf("\t\033[0;32mRTUPDATE3\n\n");
   printdt3(&dt3);
 
-  if (update_all(rcvdpkt, &dt3.costs, 3))
+  if (update_allrt(rcvdpkt, &dt3.costs, 3))
   {
     sendpkt(3, 0, dt3.costs);
     sendpkt(3, 2, dt3.costs);

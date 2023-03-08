@@ -1,3 +1,5 @@
+//LABB GENOMFÖRD AV KENAN SAHINOVIC OCH OLIVER RANER
+
 #include <stdio.h>
 
 #include "sim_engine.h"
@@ -48,7 +50,7 @@ void rtupdate1(struct rtpkt *rcvdpkt) {
  printf("\t\033[0;32mRTUPDATE1\n\n");
   printdt1(&dt1);
 
-  if(update_all(rcvdpkt, &dt1.costs, 1)){
+  if(update_allrt(rcvdpkt, &dt1.costs, 1)){
     sendpkt(1, 0, dt1.costs);
     sendpkt(1, 2, dt1.costs);
   }

@@ -1,3 +1,4 @@
+//LABB GENOMFÖRD AV KENAN SAHINOVIC OCH OLIVER RANER
 #include <stdio.h>
 
 #include "sim_engine.h"
@@ -46,19 +47,21 @@ void rtinit2()
   dt2.costs[3][2] = 2;
   printdt2(&dt2);
 
-  sendpkt(2, 0, dt2.costs);
-  sendpkt(2, 1, dt2.costs);
-  sendpkt(2, 3, dt2.costs);
+  sendpkt(2, 0, dt2.costs); //cost mellan nod 2 och 0
+  sendpkt(2, 1, dt2.costs); //cost mellan nod 2 och 1
+  sendpkt(2, 3, dt2.costs); //cost mellan nod 2 och 3
 }
 
 void rtupdate2(struct rtpkt *rcvdpkt)
 {
-  /* TODO */
+  
+
+
 
   printf("\t\033[0;32mRTUPDATE2\n\n");
   printdt2(&dt2);
 
-  if (update_all(rcvdpkt, &dt2.costs, 2))
+  if (update_allrt(rcvdpkt, &dt2.costs, 2))
   {
     sendpkt(2, 0, dt2.costs);
     sendpkt(2, 1, dt2.costs);

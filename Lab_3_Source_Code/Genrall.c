@@ -58,7 +58,7 @@ bool updateCosts(int (*costs)[4][4], const int col_update)
   return val;
 }
 
-bool update_all(struct rtpkt *pkt, int (*costs)[4][4], const int node_id)
+bool update_allrt(struct rtpkt *pkt, int (*costs)[4][4], const int node_id)
 {
   if (pkt->destid != node_id)
   {
