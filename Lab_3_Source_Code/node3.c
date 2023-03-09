@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "sim_engine.h"
-#include "Generall.h"
+
 
 extern int TRACE;
 extern int YES;
@@ -14,51 +14,77 @@ struct distance_table
   int costs[4][4];
 } dt3;
 
-void printdt3(struct distance_table *dtptr)
-{
-  printf("             via     \n");
-  printf("   D3 |    0     2 \n");
-  printf("  ----|-----------\n");
-  printf("     0|  %3d   %3d\n", dtptr->costs[0][0], dtptr->costs[0][2]);
-  printf("dest 1|  %3d   %3d\n", dtptr->costs[1][0], dtptr->costs[1][2]);
-  printf("     2|  %3d   %3d\n", dtptr->costs[2][0], dtptr->costs[2][2]);
+int minCost3[4], linkCost3[4];
+struct rtpkt pkt;
+
+void printdt3(struct distance_table *dtptr) {
+  printf("              cost to   \n");
+  printf("   D3 |    0    1     2    3 \n");
+  printf("  ----|----------------------\n");
+  printf("     0|  %3d   %3d   %3d  %3d\n",dt3.costs[0][0], dt3.costs[0][1], dt3.costs[0][2],dt3.costs[0][3]);
+  printf("from 2|  %3d   %3d   %3d  %3d\n",dt3.costs[2][0], dt3.costs[2][1], dt3.costs[2][2],dt3.costs[2][3]);
+  printf("     3|  %3d   %3d   %3d  %3d\n",dt3.costs[3][0], dt3.costs[3][1], dt3.costs[3][2],dt3.costs[3][3]);
 }
 /* Students to write the following two routines, and maybe some others */
 
 void rtinit3()
 {
-  /* TODO */
+  int i, j;
+  linkCost3[0] = 7, linkCost3[1] = INF, linkCost3[2] = 2, linkCost3[3] = 0;
 
-  for (int i = 0; i < 4; i++)
-  {
-    for (int j = 0; j < 4; j++)
-    {
-      dt3.costs[i][j] = INF;
-    }
-  }
+  //initialisera distance table
+  for (j = 0; j < 4; j++) dt3.costs[0][j] = INF;
+  for (j = 0; j < 4; j++) dt3.costs[1][j] = INF;
+  for (j = 0; j < 4; j++) dt3.costs[2][j] = linkCost3[j];
+  for (j = 0; j < 4; j++) dt3.costs[3][j] = INF;
 
-  dt3.costs[0][3] = 7; //cost mellan nod 3 och 0
-  dt3.costs[1][3] = INF; //nod 1 och 3 har ingen koppling så vi sätter inf
-  dt3.costs[2][3] = 2; //cost mellan nod 3 och 2
-  dt3.costs[3][3] = 0; //cost mellan själva noden 3
-  // printdt3(&dt3);
+  printdt3(&dt3);
 
-  sendpkt(3, 0, dt3.costs);
-  sendpkt(3, 2, dt3.costs);
+  for (i = 0; i < 4; i++) minCost3[i] = dt3.costs[3][i];
+  creatertpkt(pkt, 3, 0, minCost3);
+  creatertpkt(pkt, 3, 2, minCost3);
+  
+
+  
 }
 
 void rtupdate3(struct rtpkt *rcvdpkt)
 {
-  /* TODO */
+ struct rtpkt rcvpkt;
+  int i, j, k, n, sourceid, minVal;
 
-  printf("\t\033[0;32mRTUPDATE3\n\n");
-  printdt3(&dt3);
+  //börja med att uppdatera distance vector för srcID
 
-  if (update_allrt(rcvdpkt, &dt3.costs, 3))
-  {
-    sendpkt(3, 0, dt3.costs);
-    sendpkt(3, 2, dt3.costs);
+  sourceid = rcvpkt.sourceid;
+  for (j = 0; j < 4; j++)
+    dt3.costs[sourceid][j] = rcvpkt.mincost[j];
+
+  //kolla om noden behöver uppdatera sin distance vector
+  int tmpcost[4], flag = 0;
+
+  for (k = 0; k < 4; k++){
+    tmpcost[k] = linkCost3[k] + dt3.costs[k][n];
   }
-  printdt3(&dt3);
-  printf("\t-----------------\n\033[0m");
+
+  minVal = INF;
+  for (n = 0; n < 4; n++){
+      if(minVal > tmpcost[n])
+        minVal = tmpcost[n];
+  }
+  if(k != 3 && minVal != minCost3[k]){
+    //Om villkoret uppfylls så har distance vector ändrats, skicka ut update
+      flag = 1;
+      minCost3[k] = minVal;
+      dt3.costs[3][k] = minVal;
+  }
+
+  if(flag == 1){
+      printdt3(&dt3);
+      creatertpkt(rcvpkt, 0, 1, minCost3);
+      creatertpkt(rcvpkt, 0, 2, minCost3);
+      creatertpkt(rcvpkt, 0, 3, minCost3);
+  }else{
+      printf("Node 2 received update from node %d\n", sourceid);
+      printdt3(&dt3);
+  }
 }

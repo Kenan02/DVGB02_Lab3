@@ -26,6 +26,7 @@ void linkhandler1(int linkid, int newcost);
 void linkhandler2(int linkid, int newcost);
 void linkhandler3(int linkid, int newcost);
 
+void creatertpkt(struct rtpkt initrtpkt, int srcid, int destid, int *mincosts);
 void tolayer2(struct rtpkt packet);
 
 
