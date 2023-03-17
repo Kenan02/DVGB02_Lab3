@@ -9,9 +9,10 @@ int TRACE = 1;
 int YES = 1;
 int NO = 0;
 
-void creatertpkt(struct rtpkt initrtpkt, int srcid, int destid, int *mincosts) {
+void creatertpkt(struct rtpkt initrtpkt ,int srcid, int destid, int *mincosts) {
   
   int i;
+  
   initrtpkt.sourceid = srcid;
   initrtpkt.destid = destid;
   for (i = 0; i < 4; i++)
