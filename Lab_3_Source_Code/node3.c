@@ -15,32 +15,37 @@ struct distance_table
 } dt3;
 
 int minCost3[4], linkCost3[4];
-struct rtpkt pkt;
+
+
 
 void printdt3(struct distance_table *dtptr) {
-  printf("              cost to   \n");
+   printf("              cost to   \n");
   printf("   D3 |    0    1     2    3 \n");
   printf("  ----|----------------------\n");
-  printf("     0|  %3d   %3d   %3d  %3d\n",dt3.costs[0][0], dt3.costs[0][1], dt3.costs[0][2],dt3.costs[0][3]);
-  printf("from 2|  %3d   %3d   %3d  %3d\n",dt3.costs[2][0], dt3.costs[2][1], dt3.costs[2][2],dt3.costs[2][3]);
-  printf("     3|  %3d   %3d   %3d  %3d\n",dt3.costs[3][0], dt3.costs[3][1], dt3.costs[3][2],dt3.costs[3][3]);
+  printf("     0|  %3d   %3d   %3d  %3d\n", dt3.costs[0][0], dt3.costs[0][1], dt3.costs[0][2], dt3.costs[0][3]);
+  printf("     1|  %3d   %3d   %3d  %3d\n", dt3.costs[1][0], dt3.costs[1][1], dt3.costs[1][2], dt3.costs[1][3]);
+  printf("from 2|  %3d   %3d   %3d  %3d\n", dt3.costs[2][0], dt3.costs[2][1], dt3.costs[2][2], dt3.costs[2][3]);
+  printf("     3|  %3d   %3d   %3d  %3d\n", dt3.costs[3][0], dt3.costs[3][1], dt3.costs[3][2], dt3.costs[3][3]);
 }
 /* Students to write the following two routines, and maybe some others */
 
 void rtinit3()
 {
-  int i, j;
+  struct rtpkt pkt;
+  int i, j, source = 3;
   linkCost3[0] = 7, linkCost3[1] = INF, linkCost3[2] = 2, linkCost3[3] = 0;
 
   //initialisera distance table
-  for (j = 0; j < 4; j++) dt3.costs[0][j] = INF;
-  for (j = 0; j < 4; j++) dt3.costs[1][j] = INF;
-  for (j = 0; j < 4; j++) dt3.costs[2][j] = linkCost3[j];
-  for (j = 0; j < 4; j++) dt3.costs[3][j] = INF;
+    for(i = 0; i < 4; i++) {
+    for(j = 0; j < 4; j++) {
+      dt3.costs[i][j] = INF;
+    }
+  }
 
-  printdt3(&dt3);
-
-  for (i = 0; i < 4; i++) minCost3[i] = dt3.costs[3][i];
+	for(i = 0; i < 4; i++) {
+    dt3.costs[source][i]=linkCost3[i];
+    minCost3[i] = dt3.costs[source][i];
+  }
   creatertpkt(pkt, 3, 0, minCost3);
   creatertpkt(pkt, 3, 2, minCost3);
   
@@ -50,41 +55,47 @@ void rtinit3()
 
 void rtupdate3(struct rtpkt *rcvdpkt)
 {
- struct rtpkt rcvpkt;
-  int i, j, k, n, sourceid, minVal;
+  
+  struct rtpkt pktsend;
 
-  //börja med att uppdatera distance vector för srcID
+  int i, j, sourceid, v, minVal, source = 3;
 
-  sourceid = rcvpkt.sourceid;
-  for (j = 0; j < 4; j++)
-    dt3.costs[sourceid][j] = rcvpkt.mincost[j];
+  source = rcvdpkt->sourceid;
 
-  //kolla om noden behöver uppdatera sin distance vector
-  int tmpcost[4], flag = 0;
-
-  for (k = 0; k < 4; k++){
-    tmpcost[k] = linkCost3[k] + dt3.costs[k][n];
+  for (j = 0; j < 4; j++){
+    dt3.costs[sourceid][j] = rcvdpkt->mincost[j];
   }
 
-  minVal = INF;
-  for (n = 0; n < 4; n++){
-      if(minVal > tmpcost[n])
-        minVal = tmpcost[n];
-  }
-  if(k != 3 && minVal != minCost3[k]){
-    //Om villkoret uppfylls så har distance vector ändrats, skicka ut update
-      flag = 1;
-      minCost3[k] = minVal;
-      dt3.costs[3][k] = minVal;
+  int tmp[4], flag = 0;
+
+  for (i = 0; i < 4; i++){
+    for (j = 0; j < 4; j++){
+      tmp[j] = linkCost3[j] + dt3.costs[j][i];
+    }
+
+    minVal = INF;
+
+    for (j = 0; j < 4; j++){
+      if(minVal > tmp[j]){
+        minVal = tmp[j];
+      }
+    }
+
+    if(i != source && minVal != minCost3[i])
+      {flag = 1;
+          minCost3[i] = minVal;
+          dt3.costs[source][i] = minVal;
+      }
   }
 
   if(flag == 1){
       printdt3(&dt3);
-      creatertpkt(rcvpkt, 0, 1, minCost3);
-      creatertpkt(rcvpkt, 0, 2, minCost3);
-      creatertpkt(rcvpkt, 0, 3, minCost3);
+
+      creatertpkt(pktsend, 1, 0, minCost3);
+      creatertpkt(pktsend, 1, 2, minCost3);
+      
   }else{
-      printf("Node 2 received update from node %d\n", sourceid);
+      printf("Node 1 recieved update from %d", sourceid);
       printdt3(&dt3);
   }
 }
