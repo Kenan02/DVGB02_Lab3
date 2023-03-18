@@ -1,3 +1,5 @@
+//LABB GENOMFÖRD AV KENAN SAHINOVIC OCH OLIVER RANER
+
 #include <stdio.h>
 
 #include "sim_engine.h"
